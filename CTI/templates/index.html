@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <title>CTI Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <h1>CTI Dashboard</h1>
+    <form id="f" onsubmit="doLookup(event)">
+      <input id="q" placeholder="Enter IP or domain">
+      <button>Lookup</button>
+    </form>
+
+    <h2>Recent IOCs</h2>
+    <ul id="recent">
+      {% for r in recent %}
+        <li>{{r.q if r.get('q') else (r.get('q') or 'IOC')}} - {{r.ts}}</li>
+      {% endfor %}
+    </ul>
+
+    <h2>Queries per day</h2>
+    <canvas id="chart"></canvas>
+
+    <script>
+      async function doLookup(e){
+        e.preventDefault();
+        const q = document.getElementById('q').value;
+        const res = await fetch('/lookup', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({q})
+        });
+        const j = await res.json();
+        alert(JSON.stringify(j.results,null,2));
+        location.reload();
+      }
+
+      const counts = {{ counts|tojson }};
+      const labels = counts.map(c=>c._id);
+      const data = counts.map(c=>c.count);
+      const ctx = document.getElementById('chart').getContext('2d');
+      new Chart(ctx, { type: 'bar', data: { labels, datasets:[{label:'IOCs', data}] }});
+    </script>
+  </body>
+</html>
