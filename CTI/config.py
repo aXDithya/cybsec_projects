@@ -1,0 +1,4 @@
+VIRUSTOTAL_API_KEY = "VT_API_KEY"
+ABUSEIPDB_KEY = "ABUSEIPDB_KEY"
+MONGO_URI = "mongodb://localhost:27017"
+DB_NAME = "cti_db"
